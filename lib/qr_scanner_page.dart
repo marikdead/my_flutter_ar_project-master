@@ -56,6 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pushNamed(context, '/listPage');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.directions),
+              title: const Text('Выбор маршрута'),
+              onTap: () {
+                Navigator.pushNamed(context, '/routeSelection');
+              },
+            ),
           ],
         ),
       ),

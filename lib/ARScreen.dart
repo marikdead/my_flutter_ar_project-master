@@ -207,25 +207,6 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
       await arObjectManager.removeNode(routeArrow!); // Удаляем предыдущую стрелку
     }
 
-    if (nextPosition != null) {
-      // Создаем стрелку между текущей и следующей точкой
-      vector.Vector3 midPoint = (targetPosition + nextPosition) * 0.5;
-      vector.Vector3 direction = nextPosition - targetPosition;
-      double distance = direction.length;
-
-      direction.normalize();
-
-      routeArrow = ARNode(
-        type: NodeType.webGLB,
-        uri: "https://jla.ovh/glb-jla.glb", // 3D модель стрелки
-        scale: vector.Vector3(0.1, 0.1, distance),
-        position: midPoint,
-        rotation: vector.Vector4(0, 1, 0, atan2(direction.x, direction.z)),
-      );
-
-      await arObjectManager.addNode(routeArrow!);
-    }
-
     // Поворот указателя пользователя в сторону текущей цели
     rotateArrowFromCameraTowards(userPointer!, targetPosition, cameraPosition);
 
