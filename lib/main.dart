@@ -37,10 +37,9 @@ class MyApp extends StatelessWidget {
         '/JustObject': (context) => JustObject(),
         '/ArImage': (context) => ArImage(),
         '/ArScreen': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map<String, ARObjectData>;
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return AREnvironmentScreen(
-            startPoint: args['startPoint'] as ARObjectData,
-            endPoint: args['endPoint'] as ARObjectData,
+            routePoints: args['routePoints'] as List<ARObjectData>,
           );
         },
         '/routeSelection': (context) => RouteSelectionScreen(),

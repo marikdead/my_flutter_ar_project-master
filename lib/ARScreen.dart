@@ -1,23 +1,20 @@
-import 'dart:math';
+import 'dart:async';
 import 'package:ar_flutter_plugin_flutterflow/datatypes/node_types.dart';
-import 'package:ar_flutter_plugin_flutterflow/managers/ar_anchor_manager.dart';
-import 'package:ar_flutter_plugin_flutterflow/managers/ar_location_manager.dart';
 import 'package:ar_flutter_plugin_flutterflow/models/ar_node.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
-import 'dart:async';
-import 'enviromental/ar_object_data.dart';
-import 'enviromental/ar_helper.dart';
-import 'enviromental/ar_route_points.dart';
 import 'package:ar_flutter_plugin_flutterflow/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin_flutterflow/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin_flutterflow/managers/ar_session_manager.dart';
+import 'package:ar_flutter_plugin_flutterflow/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin_flutterflow/managers/ar_location_manager.dart';
+import 'enviromental/ar_helper.dart';
+import 'enviromental/ar_object_data.dart';
 
 class AREnvironmentScreen extends StatefulWidget {
-  final ARObjectData startPoint;
-  final ARObjectData endPoint;
+  final List<ARObjectData> routePoints;
 
-  AREnvironmentScreen({required this.startPoint, required this.endPoint});
+  AREnvironmentScreen({required this.routePoints});
 
   @override
   _AREnvironmentScreenState createState() => _AREnvironmentScreenState();
@@ -28,23 +25,15 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
   late ARObjectManager arObjectManager;
   List<ARNode> nodes = [];
   ARNode? userPointer; // Указатель пользователя (стрелка)
-  ARNode? routeArrow; // Стрелка между точками
   Timer? updateTimer;
   String currentStep = "Начните движение к первой точке";
   bool isOffRoute = false;
   int currentTargetIndex = 0;
 
-  late List<ARObjectData> routePoints;
-
   @override
   void initState() {
     super.initState();
-
-    // Рассчитываем маршрут на основе начальной и конечной точки
-    routePoints = _calculateRoute(widget.startPoint, widget.endPoint);
-
-    // Инициализация AR
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeAR();
     });
   }
@@ -76,7 +65,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
               decoration: BoxDecoration(
                 color: isOffRoute
                     ? Colors.red.withOpacity(0.6)
-                    : (currentTargetIndex >= routePoints.length)
+                    : (currentTargetIndex >= widget.routePoints.length)
                     ? Colors.green.withOpacity(0.6)
                     : Colors.black.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(8),
@@ -92,7 +81,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
                   Text(
                     isOffRoute
                         ? "Вернитесь на маршрут"
-                        : currentTargetIndex >= routePoints.length
+                        : currentTargetIndex >= widget.routePoints.length
                         ? "Маршрут завершён!"
                         : currentStep,
                     style: TextStyle(color: Colors.white, fontSize: 18),
@@ -116,17 +105,6 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
     });
   }
 
-  List<ARObjectData> _calculateRoute(ARObjectData start, ARObjectData end) {
-    int startIndex = arRoutePoints.indexOf(start);
-    int endIndex = arRoutePoints.indexOf(end);
-
-    if (startIndex < endIndex) {
-      return arRoutePoints.sublist(startIndex, endIndex + 1);
-    } else {
-      return arRoutePoints.sublist(endIndex, startIndex + 1).reversed.toList();
-    }
-  }
-
   void _onARViewCreated(ARSessionManager sessionManager, ARObjectManager objectManager, ARAnchorManager anchorManager, ARLocationManager locationManager) {
     arSessionManager = sessionManager;
     arObjectManager = objectManager;
@@ -145,7 +123,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
   }
 
   void _addObjectsToScene() async {
-    for (ARObjectData objectData in routePoints) {
+    for (ARObjectData objectData in widget.routePoints) {
       final node = ARNode(
         type: NodeType.webGLB,
         uri: objectData.modelUri,
@@ -190,12 +168,12 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
     userPointer!.position = newPointerPosition;
 
     // Обновляем стрелку между текущей и следующей точкой
-    if (currentTargetIndex < routePoints.length) {
-      vector.Vector3 targetPosition = routePoints[currentTargetIndex].position;
+    if (currentTargetIndex < widget.routePoints.length) {
+      vector.Vector3 targetPosition = widget.routePoints[currentTargetIndex].position;
       vector.Vector3? nextPosition;
 
-      if (currentTargetIndex + 1 < routePoints.length) {
-        nextPosition = routePoints[currentTargetIndex + 1].position;
+      if (currentTargetIndex + 1 < widget.routePoints.length) {
+        nextPosition = widget.routePoints[currentTargetIndex + 1].position;
       }
 
       _updateRouteArrow(targetPosition, nextPosition, cameraPosition);
@@ -203,9 +181,6 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
   }
 
   void _updateRouteArrow(vector.Vector3 targetPosition, vector.Vector3? nextPosition, vector.Vector3 cameraPosition) async {
-    if (routeArrow != null) {
-      await arObjectManager.removeNode(routeArrow!); // Удаляем предыдущую стрелку
-    }
 
     // Поворот указателя пользователя в сторону текущей цели
     rotateArrowFromCameraTowards(userPointer!, targetPosition, cameraPosition);
@@ -219,8 +194,8 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
   void _moveToNextTarget() {
     setState(() {
       currentTargetIndex++;
-      if (currentTargetIndex < routePoints.length) {
-        currentStep = routePoints[currentTargetIndex].stepDescription;
+      if (currentTargetIndex < widget.routePoints.length) {
+        currentStep = widget.routePoints[currentTargetIndex].stepDescription;
       } else {
         currentStep = "Маршрут завершён!";
         isOffRoute = false;
