@@ -5,16 +5,21 @@ class ARObjectData {
   final String name;
   final String modelUri;
   final vector.Vector3 position;
-  final String stepDescription;
+  String? stepDescription; // Изменено на nullable, чтобы избежать LateInitializationError
 
   ARObjectData({
     required this.id,
     required this.name,
     required this.modelUri,
     required this.position,
-    required this.stepDescription,
+    this.stepDescription,
   });
+
+  void setStepDescription(String description) {
+    stepDescription = description;
+  }
 }
+
 
 class ARRouteConnection {
   final ARObjectData pointA;
@@ -30,18 +35,36 @@ class ARRouteConnection {
   });
 
   bool contains(ARObjectData point) {
-    return pointA == point || pointB == point;
+    return point == pointA || point == pointB;
+  }
+
+  bool connects(ARObjectData a, ARObjectData b) {
+    return (a == pointA && b == pointB) || (a == pointB && b == pointA);
   }
 
   ARObjectData getNextPoint(ARObjectData current) {
-    if (current == pointA) return pointB;
-    if (current == pointB) return pointA;
-    throw ArgumentError('Точка не связана с данной связью');
+    if (current == pointA) {
+      return pointB;
+    } else {
+      return pointA;
+    }
   }
 
-  String getStep(ARObjectData current) {
-    if (current == pointA) return forwardStep;
-    if (current == pointB) return backwardStep;
-    throw ArgumentError('Точка не связана с данной связью');
+  String getStep(ARObjectData from, ARObjectData to) {
+    if (from == pointA && to == pointB) {
+      return forwardStep;
+    } else if (from == pointB && to == pointA) {
+      return backwardStep;
+    }
+    return '';
   }
 }
+
+class PathResult {
+  final List<ARObjectData> points;
+  final List<ARRouteConnection> connections;
+
+  PathResult({required this.points, required this.connections});
+}
+
+

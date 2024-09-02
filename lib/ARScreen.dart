@@ -75,7 +75,8 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
                 children: [
                   Text(
                     'Текущий шаг',
-                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14),
+                    style: TextStyle(
+                        color: Colors.white.withOpacity(0.7), fontSize: 14),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -105,7 +106,9 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
     });
   }
 
-  void _onARViewCreated(ARSessionManager sessionManager, ARObjectManager objectManager, ARAnchorManager anchorManager, ARLocationManager locationManager) {
+  void _onARViewCreated(ARSessionManager sessionManager,
+      ARObjectManager objectManager, ARAnchorManager anchorManager,
+      ARLocationManager locationManager) {
     arSessionManager = sessionManager;
     arObjectManager = objectManager;
 
@@ -181,7 +184,6 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
   }
 
   void _updateRouteArrow(vector.Vector3 targetPosition, vector.Vector3? nextPosition, vector.Vector3 cameraPosition) async {
-
     // Поворот указателя пользователя в сторону текущей цели
     rotateArrowFromCameraTowards(userPointer!, targetPosition, cameraPosition);
 
@@ -195,7 +197,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
     setState(() {
       currentTargetIndex++;
       if (currentTargetIndex < widget.routePoints.length) {
-        currentStep = widget.routePoints[currentTargetIndex].stepDescription;
+        currentStep = widget.routePoints[currentTargetIndex].stepDescription!;
       } else {
         currentStep = "Маршрут завершён!";
         isOffRoute = false;

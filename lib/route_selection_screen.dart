@@ -12,15 +12,15 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
   ARObjectData? startPoint;
   ARObjectData? endPoint;
   List<ARObjectData> shortestPath = [];
-  bool debugMode = false; // Переключатель режима отладки
-  List<String> debugLogs = []; // Логи для режима отладки
+  bool debugMode = false;
+  List<String> debugLogs = [];
 
   void _selectStartPoint(ARObjectData point) {
     setState(() {
       startPoint = point;
-      endPoint = null; // Сбрасываем конечную точку при выборе новой начальной
-      shortestPath.clear(); // Очищаем путь при изменении начальной точки
-      debugLogs.clear(); // Очищаем логи
+      endPoint = null;
+      shortestPath.clear();
+      debugLogs.clear();
     });
   }
 
@@ -53,7 +53,7 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
             onChanged: (value) {
               setState(() {
                 debugMode = value;
-                debugLogs.clear(); // Очищаем логи при смене режима
+                debugLogs.clear();
               });
             },
             activeColor: Colors.white,
@@ -67,7 +67,7 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
           children: [
             Text("Начальная точка", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
-            InkWell(
+            GestureDetector(
               onTap: () => _showPointSelectionDialog(isStartPoint: true),
               child: Container(
                 padding: EdgeInsets.all(14),
@@ -98,7 +98,7 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
               SizedBox(height: 30),
               Text("Конечная точка", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
-              InkWell(
+              GestureDetector(
                 onTap: () => _showPointSelectionDialog(isStartPoint: false),
                 child: Container(
                   padding: EdgeInsets.all(14),
@@ -131,7 +131,7 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _showRoutePreview(); // Показать маршрут
+                    _showRoutePreview();
                   },
                   icon: Icon(Icons.visibility, size: 28),
                   label: Text(
@@ -147,16 +147,15 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10), // Отступ между кнопками
+              SizedBox(height: 10),
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Переход на экран с указаниями (AREnvironmentScreen)
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AREnvironmentScreen(
-                          routePoints: shortestPath, // Передаем найденный маршрут
+                          routePoints: shortestPath,
                         ),
                       ),
                     );
@@ -207,22 +206,14 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
 
         return AlertDialog(
           title: Text(isStartPoint ? "Выберите начальную точку" : "Выберите конечную точку"),
-          content: Container(
-            width: double.maxFinite,
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 3,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: pointsToShow.length,
-              itemBuilder: (context, index) {
-                final point = pointsToShow[index];
+          content: SingleChildScrollView(
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: pointsToShow.map((point) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop();
                     if (isStartPoint) {
                       _selectStartPoint(point);
                     } else {
@@ -230,19 +221,28 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
                     }
                   },
                   child: Container(
+                    padding: EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: isStartPoint ? Colors.blueAccent : Colors.green,
+                      color: Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blueAccent, width: 2),
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      point.name,
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
+                    child: Column(
+                      children: [
+                        Icon(
+                          isStartPoint ? Icons.location_on : Icons.flag,
+                          color: isStartPoint ? Colors.blueAccent : Colors.green,
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          point.name,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
                     ),
                   ),
                 );
-              },
+              }).toList(),
             ),
           ),
         );
@@ -255,30 +255,38 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Маршрут"),
-              IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-          content: Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: shortestPath.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(shortestPath[index].name),
+          title: Text("Предварительный просмотр маршрута"),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: shortestPath.asMap().entries.map((entry) {
+                int index = entry.key;
+                ARObjectData point = entry.value;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.location_on, color: Colors.blueAccent),
+                      title: Text(point.name),
+                      subtitle: index < shortestPath.length - 1
+                          ? Text(shortestPath[index + 1].stepDescription ?? "Нет описания")
+                          : null,
+                    ),
+                    if (index < shortestPath.length - 1) Divider(),
+                  ],
                 );
-              },
+              }).toList(),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Закрыть"),
+            ),
+          ],
         );
       },
     );
