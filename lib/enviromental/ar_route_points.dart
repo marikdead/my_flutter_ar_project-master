@@ -7,30 +7,30 @@ List<ARObjectData> arRoutePoints = [
   ARObjectData(
     id: 'point1',
     name: 'Въезд',
-    modelUri: 'https://jla.ovh/glb-jla.glb',
+    modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
     position: vector.Vector3(0, -0.5, -1),
-    stepDescription: '', // Шаг будет определяться позже на основе связей
+    stepDescription: '',
   ),
   ARObjectData(
     id: 'point2',
     name: 'Центральная линия (Въезд)',
-    modelUri: 'https://jla.ovh/glb-jla.glb',
+    modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
     position: vector.Vector3(0, -0.5, -9),
     stepDescription: '',
   ),
   ARObjectData(
     id: 'point3',
     name: 'Крайний левый блок мест',
-    modelUri: 'https://jla.ovh/glb-jla.glb',
+    modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
     position: vector.Vector3(-12, -0.5, -9),
     stepDescription: '',
   ),
   ARObjectData(
     id: 'point4',
     name: 'Место 279',
-    modelUri: 'https://jla.ovh/glb-jla.glb',
+    modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
     position: vector.Vector3(-17, -0.5, -14),
-    stepDescription: '', // Шаг будет определяться позже на основе связей
+    stepDescription: '',
   ),
   ARObjectData(
     id: 'point5',
@@ -50,7 +50,7 @@ List<ARObjectData> arRoutePoints = [
     name: 'Точка 7',
     modelUri: 'https://jla.ovh/glb-jla.glb',
     position: vector.Vector3(0, 0, 1),
-    stepDescription: '', // Шаг будет определяться позже на основе связей
+    stepDescription: '',
   ),
   ARObjectData(
     id: 'point8',
@@ -66,10 +66,10 @@ List<ARObjectData> arRoutePoints = [
     position: vector.Vector3(0, 0, 3),
     stepDescription: '',
   ),
-  // Добавьте остальные точки
+
 ];
 
-// Определение связей между точками
+
 List<ARRouteConnection> arRouteConnections = [
   ARRouteConnection(
     pointA: arRoutePoints[0],
@@ -95,7 +95,7 @@ List<ARRouteConnection> arRouteConnections = [
     forwardStep: "Идите от точки 3 к точке 2",
     backwardStep: "Поверните направо",
   ),
-  // Добавьте остальные связи между точками
+  
 ];
 
 // Функция для поиска кратчайшего пути между двумя точками с включением отладки

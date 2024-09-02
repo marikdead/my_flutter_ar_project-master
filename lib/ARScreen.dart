@@ -130,7 +130,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
       final node = ARNode(
         type: NodeType.webGLB,
         uri: objectData.modelUri,
-        scale: vector.Vector3(1, 1, 1),
+        scale: vector.Vector3(0.1, 0.1, 0.1),
         position: objectData.position,
       );
       if (await arObjectManager.addNode(node) != null) {
@@ -144,7 +144,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
 
     userPointer = ARNode(
       type: NodeType.webGLB,
-      uri: "https://jla.ovh/glb-jla.glb", // 3D модель указателя пользователя
+      uri: "http://127.0.0.1:8080/arrow.glb", // 3D модель указателя пользователя
       scale: vector.Vector3(0.5, 0.5, 0.5),
       position: pointerPosition,
     );
