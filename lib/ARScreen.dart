@@ -116,7 +116,8 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
       showFeaturePoints: false,
       showPlanes: false,
       customPlaneTexturePath: null,
-      showWorldOrigin: true,
+      showWorldOrigin: false,
+      showAnimatedGuide: false,
       handleTaps: false,
     );
 
@@ -130,7 +131,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
       final node = ARNode(
         type: NodeType.webGLB,
         uri: objectData.modelUri,
-        scale: vector.Vector3(0.1, 0.1, 0.1),
+        scale: vector.Vector3(0.05, 0.05, 0.05),
         position: objectData.position,
       );
       if (await arObjectManager.addNode(node) != null) {
@@ -145,7 +146,7 @@ class _AREnvironmentScreenState extends State<AREnvironmentScreen> {
     userPointer = ARNode(
       type: NodeType.webGLB,
       uri: "http://127.0.0.1:8080/arrow.glb", // 3D модель указателя пользователя
-      scale: vector.Vector3(0.5, 0.5, 0.5),
+      scale: vector.Vector3(0.1, 0.1, 0.1),
       position: pointerPosition,
     );
 
