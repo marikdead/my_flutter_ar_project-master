@@ -62,10 +62,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/model.glb
-    - assets/arrow.glb
-    - assets/arrow.gltf
-    - assets/scene.bin
+    - assets/logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

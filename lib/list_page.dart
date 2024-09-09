@@ -36,30 +36,6 @@ class _ListPageState extends State<ListPage> with SingleTickerProviderStateMixin
 
     final List<ButtonConfig> buttonConfigs = [
       ButtonConfig(
-        title: 'Моё отображение простого объекта в пространстве',
-        onPressed: () {
-          Navigator.pushNamed(context, '/JustObject');
-        },
-      ),
-      ButtonConfig(
-        title: 'Моя AR камера',
-        onPressed: () {
-          Navigator.pushNamed(context, '/myAr');
-        },
-      ),
-      ButtonConfig(
-        title: 'Отображение объектов по QR коду',
-        onPressed: () {
-          Navigator.pushNamed(context, '/ArImage');
-        },
-      ),
-      ButtonConfig(
-        title: 'Экран с отображением направления',
-        onPressed: () {
-          Navigator.pushNamed(context, '/ArScreen');
-        },
-      ),
-      ButtonConfig(
         title: 'Экран выбора маршрута',
         onPressed: () {
           Navigator.pushNamed(context, '/routeSelection');

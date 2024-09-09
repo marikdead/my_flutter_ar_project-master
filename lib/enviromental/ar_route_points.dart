@@ -8,29 +8,33 @@ List<ARObjectData> arRoutePoints = [
     id: 'point1',
     name: 'Въезд',
     modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
-    position: vector.Vector3(0, -0.5, -1),
+    position: vector.Vector3(0, -0.5, -1), // (0, -0.5, -1)
     stepDescription: '',
+    qrCode: 'point1'
   ),
   ARObjectData(
     id: 'point2',
     name: 'Центральная линия (Въезд)',
     modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
-    position: vector.Vector3(0, -0.5, -9),
+    position: vector.Vector3(0, 0, -9), // (0, -0.5, -9)
     stepDescription: '',
+      qrCode: 'point2'
   ),
   ARObjectData(
     id: 'point3',
     name: 'Крайний левый блок мест',
     modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
-    position: vector.Vector3(-12, -0.5, -9),
+    position: vector.Vector3(-12, 0, -9), //(-12, -0.5, -9)
     stepDescription: '',
+      qrCode: 'point3'
   ),
   ARObjectData(
     id: 'point4',
     name: 'Место 279',
     modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
-    position: vector.Vector3(-17, -0.5, -14),
+    position: vector.Vector3(-17, 0, -14), //(-17, -0.5, -14)
     stepDescription: '',
+      qrCode: 'point4'
   ),
   ARObjectData(
     id: 'point5',
@@ -38,19 +42,23 @@ List<ARObjectData> arRoutePoints = [
     modelUri: 'https://jla.ovh/glb-jla.glb',
     position: vector.Vector3(1, 0, 0),
     stepDescription: '',
+      qrCode: 'point5'
   ),
   ARObjectData(
     id: 'point6',
-    name: 'Точка 6',
-    modelUri: 'https://jla.ovh/glb-jla.glb',
-    position: vector.Vector3(2, 0, 0),
+    name: 'Тестовая точка 1',
+    modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
+    position: vector.Vector3(0, -0.5, -2),
     stepDescription: '',
-  ),ARObjectData(
+      qrCode: 'point6'
+  ),
+  ARObjectData(
     id: 'point7',
-    name: 'Точка 7',
-    modelUri: 'https://jla.ovh/glb-jla.glb',
-    position: vector.Vector3(0, 0, 1),
+    name: 'Тестовая точка 2',
+    modelUri: 'http://127.0.0.1:8080/map_pointer.glb',
+    position: vector.Vector3(1, -0.5, -2),
     stepDescription: '',
+      qrCode: 'point7'
   ),
   ARObjectData(
     id: 'point8',
@@ -58,6 +66,7 @@ List<ARObjectData> arRoutePoints = [
     modelUri: 'https://jla.ovh/glb-jla.glb',
     position: vector.Vector3(0, 0, 2),
     stepDescription: '',
+      qrCode: 'point8'
   ),
   ARObjectData(
     id: 'point9',
@@ -65,6 +74,7 @@ List<ARObjectData> arRoutePoints = [
     modelUri: 'https://jla.ovh/glb-jla.glb',
     position: vector.Vector3(0, 0, 3),
     stepDescription: '',
+      qrCode: 'point9'
   ),
 
 ];
@@ -94,6 +104,18 @@ List<ARRouteConnection> arRouteConnections = [
     pointB: arRoutePoints[3],
     forwardStep: "Идите от точки 3 к точке 2",
     backwardStep: "Поверните направо",
+  ),
+  ARRouteConnection(
+    pointA: arRoutePoints[0],
+    pointB: arRoutePoints[5],
+    forwardStep: "Идите от точки 1 к точке 6",
+    backwardStep: "Места мало, делаю так",
+  ),
+  ARRouteConnection(
+    pointA: arRoutePoints[5],
+    pointB: arRoutePoints[6],
+    forwardStep: "Идите от точки 1 к точке 6",
+    backwardStep: "Места мало, делаю так",
   ),
   
 ];

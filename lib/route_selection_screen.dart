@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'ARScreen.dart';
-import 'enviromental/ar_route_points.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'enviromental/ar_object_data.dart';
+import 'enviromental/ar_route_points.dart';
+import 'package:vector_math/vector_math_64.dart' as vector;
+import 'ARScreen.dart';
 
 class RouteSelectionScreen extends StatefulWidget {
   @override
@@ -14,6 +16,14 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
   List<ARObjectData> shortestPath = [];
   bool debugMode = false;
   List<String> debugLogs = [];
+  ARObjectData? scannedPoint;
+  QRViewController? qrController;
+
+  @override
+  void dispose() {
+    qrController?.dispose();
+    super.dispose();
+  }
 
   void _selectStartPoint(ARObjectData point) {
     setState(() {
@@ -68,7 +78,7 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
             Text("Начальная точка", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             GestureDetector(
-              onTap: () => _showPointSelectionDialog(isStartPoint: true),
+              onTap: () => _showQRScannerDialog(isStartPoint: true),
               child: Container(
                 padding: EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -195,6 +205,91 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
     );
   }
 
+  void _showQRScannerDialog({required bool isStartPoint}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder( // Используем StatefulBuilder для локального обновления состояния диалога
+          builder: (BuildContext context, StateSetter setModalState) {
+            return AlertDialog(
+              title: Text("Сканирование QR-кода"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 300,
+                    height: 300,
+                    child: QRView(
+                      key: GlobalKey(debugLabel: 'QR'),
+                      onQRViewCreated: (QRViewController controller) {
+                        this.qrController = controller;
+                        controller.scannedDataStream
+                            .asBroadcastStream()
+                            .listen((scanData) {
+                          ARObjectData? matchedPoint = arRoutePoints.firstWhere(
+                                (point) => point.qrCode == scanData.code,
+                            orElse: () => ARObjectData(
+                                id: '',
+                                name: '',
+                                qrCode: '',
+                                position: vector.Vector3.zero(),
+                                modelUri: ''
+                            ),
+                          );
+
+                          if (matchedPoint.name.isNotEmpty) {
+                            setModalState(() { // Локальное обновление состояния диалога
+                              scannedPoint = matchedPoint;
+                            });
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  if (scannedPoint != null && scannedPoint!.name.isNotEmpty)
+                    Text(
+                      "Отсканированная точка: ${scannedPoint!.name}",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    )
+                  else
+                    Text("Сканируйте QR-код"),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: (scannedPoint != null && scannedPoint!.name.isNotEmpty)
+                      ? () {
+                    Navigator.of(context).pop();
+                    if (isStartPoint) {
+                      _selectStartPoint(scannedPoint!);
+                    } else {
+                      _selectEndPoint(scannedPoint!);
+                    }
+                  }
+                      : null,
+                  child: Text("Выбрать точку"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Отмена"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+
+
+
+
+
   void _showPointSelectionDialog({required bool isStartPoint}) {
     showDialog(
       context: context,
@@ -258,22 +353,37 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
           title: Text("Предварительный просмотр маршрута"),
           content: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: shortestPath.asMap().entries.map((entry) {
                 int index = entry.key;
                 ARObjectData point = entry.value;
 
+                // Следующая точка, если это не последняя точка
+                ARObjectData? nextPoint = index < shortestPath.length - 1
+                    ? shortestPath[index + 1]
+                    : null;
+
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ListTile(
                       leading: Icon(Icons.location_on, color: Colors.blueAccent),
-                      title: Text(point.name),
-                      subtitle: index < shortestPath.length - 1
-                          ? Text(shortestPath[index + 1].stepDescription ?? "Нет описания")
+                      title: Text("${index + 1}. ${point.name}"),
+                      // Если это не последняя точка, показываем шаг до следующей точки
+                      subtitle: nextPoint != null
+                          ? Text("${nextPoint.stepDescription}")
                           : null,
                     ),
-                    if (index < shortestPath.length - 1) Divider(),
+                    if (nextPoint != null) // Если есть следующая точка, показываем стрелку вниз
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(color: Colors.blueAccent),
+                          ),
+                          Icon(Icons.arrow_downward, color: Colors.blueAccent),
+                          Expanded(
+                            child: Divider(color: Colors.blueAccent),
+                          ),
+                        ],
+                      ),
                   ],
                 );
               }).toList(),
@@ -291,4 +401,8 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
       },
     );
   }
+
+
+
+
 }

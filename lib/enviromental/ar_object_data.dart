@@ -5,20 +5,23 @@ class ARObjectData {
   final String name;
   final String modelUri;
   final vector.Vector3 position;
-  String? stepDescription; // Изменено на nullable, чтобы избежать LateInitializationError
+  final String qrCode; // QR-код, связанный с этой точкой
+  String? stepDescription;
 
   ARObjectData({
     required this.id,
     required this.name,
     required this.modelUri,
     required this.position,
+    required this.qrCode,
     this.stepDescription,
   });
 
-  void setStepDescription(String description) {
+  void setStepDescription(String? description) {
     stepDescription = description;
   }
 }
+
 
 
 class ARRouteConnection {
@@ -60,11 +63,5 @@ class ARRouteConnection {
   }
 }
 
-class PathResult {
-  final List<ARObjectData> points;
-  final List<ARRouteConnection> connections;
-
-  PathResult({required this.points, required this.connections});
-}
 
 
