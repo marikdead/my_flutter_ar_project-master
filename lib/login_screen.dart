@@ -39,7 +39,7 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 70),// Push the button to the bottom
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  Navigator.pushNamed(context, '/routeSelection');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,

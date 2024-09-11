@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_flutter_ar_project/route_selection_screen.dart';
 import 'ARScreen.dart';
 import 'login_screen.dart';
+import 'new_qr_login.dart';
 import 'qr_scanner_page.dart';
 import 'enviromental/ar_object_data.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => LoginScreen(),
-        '/login': (context) => const MyHomePage(title: 'QR Code Scanner Home Page'),
+        '/login': (context) => QrScannerScreen(),
         '/ArScreen': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return AREnvironmentScreen(
